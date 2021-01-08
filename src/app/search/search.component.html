@@ -1,0 +1,14 @@
+<div class="container">
+    <div *ngIf='active'>
+        <p class="title">模糊搜索结果信息：共找到 {{count}} 结果</p>
+        <ul>
+            <li *ngFor="let li of result" (click)='getRelation(li.id);activeId=li.id' [class]='activeId==li.id?"liActive":""' >
+                {{li.name.split(keyword)[0]}}<span style="color: red;">{{keyword}}</span>{{li.name.split(keyword)[1]}}
+            </li>
+        </ul>
+        <hr>
+    </div>
+    <p class="word" >
+        <span (click)="active = !active">全部收起</span>
+    </p>
+</div>

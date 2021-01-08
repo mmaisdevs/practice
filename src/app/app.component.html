@@ -1,0 +1,21 @@
+<div class="container">
+  <div >
+    <nz-select [(ngModel)]="selectedBase" #datastoreName (ngModelChange)='selectedOptionDatabase($event)' class="chooseArea" nzPlaceHolder="请选择数据库">
+      <nz-option *ngFor="let option of dataBase" [nzValue]="option" [nzLabel]="option"></nz-option>
+    </nz-select>
+    <nz-select [(ngModel)]="selectedScene" (ngModelChange)='selectedOptionDataScene($event)' class="chooseArea" nzPlaceHolder="请选择场景">
+      <nz-option *ngFor="let option of dataScene" [nzValue]="option" [nzLabel]="option"></nz-option>
+    </nz-select>
+    <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton" class="chooseArea">
+      <input type="text"  #keyword nz-input placeholder="请输入实体名称" (keyup)="getResult(keyword.value)" />
+    </nz-input-group>
+    <ng-template #suffixIconButton>
+      <!-- <i nz-icon nzType="search"></i> -->
+      <button nz-button nzType="primary" nzSearch (click)='getResult(keyword.value)'><i nz-icon nzType="search"></i></button>
+    </ng-template>
+    <app-search class="chart-result" #result (reset)='resetOption($event)'  [keyword]= 'keyword.value' ></app-search>
+  </div> 
+  <div class="echartsArea">
+    <div echarts [options]="chartOption" class="chart"   (chartInit)="onChartInit($event)"></div>
+  </div>
+</div>
