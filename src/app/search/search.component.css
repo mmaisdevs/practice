@@ -6,6 +6,8 @@
 }
 .container ul{
     list-style: none;
+    overflow-y: auto;
+    max-height: 100px;
 }
 hr{
     width: 100%;

@@ -12,7 +12,7 @@ export class AppComponent implements OnInit {
   @ViewChild('result', { static: true }) result;
   constructor(
     private httpService: HttpService,
-    private el:ElementRef
+    private el: ElementRef
   ) { }
   title = 'pactice';
   public dataBase: any[];
@@ -23,15 +23,16 @@ export class AppComponent implements OnInit {
   public colorSet: Object;
   active: boolean = false;
   public keyword = '';
-  loading:Boolean= false;
+  loading: Boolean = false;
   ngOnInit(): void {
     this.init()
   }
   onChartInit(ec: any): void {
     this.myChart = ec
-    this.myChart.on('click',(params:any)=>{
+    this.myChart.on('click', (params: any) => {
       this.resetOption(params.data.id)
     })
+
   }
   //获取下拉框数据
   init(): void {
@@ -52,6 +53,7 @@ export class AppComponent implements OnInit {
     this.getColors(dat)
 
     this.httpService.getVisulize(dat).subscribe(data => {
+      this.myChart.showLoading()
       this.resetchart(data)
     })
   }
@@ -87,14 +89,14 @@ export class AppComponent implements OnInit {
     })
   }
   resetchart(dat: any): void {
-    this.chartOption.series[0].links = dat.relations.map((x:any) => {
+    this.chartOption.series[0].links = dat.relations.map((x: any) => {
       return {
         source: x.sourceId,
         target: x.targetId,
         value: x.value
       }
     })
-    this.chartOption.series[0].data = dat.nodes.map((x:any) => {
+    this.chartOption.series[0].data = dat.nodes.map((x: any) => {
       return {
         id: x.id,
         name: x.name,
@@ -104,18 +106,46 @@ export class AppComponent implements OnInit {
       }
     })
     this.myChart.setOption(this.chartOption)
+    this.myChart.hideLoading()
   }
   //echart 配置
   chartOption = {
-    color:['#c0c0c0'],
+    color: ['#c0c0c0'],
     title: {
       text: ''
     },
     tooltip: {
-      show: false
+      show: true,
+      textstyle: {
+        align: 'left'
+      },
+      formatter: function (params: any) {
+        if(params.dataType=='edge') return;
+        let newParamsName = '';
+        let title = '';
+        let titleLength = params.name.length;
+        let rowCount = 20;
+        let rowNumber = Math.ceil(titleLength / rowCount);
+        if (titleLength > rowCount) {
+          for (let i = 0; i < rowNumber; i++) {
+            let tempStr = "";
+            let start = i * rowCount;
+            let end = start + rowCount;
+            if (i == rowNumber - 1) {
+              tempStr = params.name.substring(start, titleLength);
+            } else {
+              tempStr = params.name.substring(start, end) + "</br>";
+            }
+            newParamsName += tempStr;
+          }
+        } else {
+          newParamsName = params.name;
+        }
+        if(titleLength>6)return newParamsName
+      }
     },
     legend: {},
-
+    
     series: [
       {
         type: 'graph',
@@ -123,15 +153,17 @@ export class AppComponent implements OnInit {
         edgeSymbol: ['none', 'arrow'],
         force: {
           repulsion: 500,
-          edgeLength: [100, 150]
+          edgeLength: [100, 150],
+          layoutAnimation:false
         },
         data: [],
         links: [],
         categories: [],
         roam: true,
         focusNodeAdjacency: true,
+        animation:false,
         itemStyle: {
-          color:(params:any)=> '#c0c0c0' ,
+          color: (params: any) => '#c0c0c0',
           borderColor: '#fff',
           borderWidth: 1,
           shadowBlur: 10,
@@ -142,13 +174,17 @@ export class AppComponent implements OnInit {
         label: {
           show: true,
           position: 'bottom',
-          formatter: '{b}',
+          formatter: (params: any):string => {
+            if (params.data.name.length > 6) return params.data.name.substr(0, 5) + '...';
+            return params.data.name
+          },
           color: '#000'
         },
         edgeLabel: {
           show: true,
           position: 'middle',
           formatter: (params: any) => {
+            console.log(params)
             return params.value
           }
         },
