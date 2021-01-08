@@ -46,6 +46,7 @@ export class AppComponent implements OnInit {
     this.httpService.getScenarios(value).subscribe(data => this.dataScene = data.scenarioNames)
   }
   selectedOptionDataScene(value: string): void {
+    this.myChart.showLoading()
     let dat = {
       datastoreName: this.selectedBase,
       scenarioName: value
@@ -53,7 +54,7 @@ export class AppComponent implements OnInit {
     this.getColors(dat)
 
     this.httpService.getVisulize(dat).subscribe(data => {
-      this.myChart.showLoading()
+      
       this.resetchart(data)
     })
   }
